@@ -7,6 +7,7 @@ port.onMessage.addListener(function(msg) {
     log('message', msg)
     switch (msg.event) {
         case 'addEventListeners':
+            log('hooking into fullscreen')
             document.addEventListener('fullscreenchange', function(event) {
                 log('fullscreen', event)
                 setTimeout(() => {
@@ -21,14 +22,6 @@ port.onMessage.addListener(function(msg) {
             break;
     }
 });
-
-
-
-// chrome.runtime.sendMessage({ type: 'connect' }, response => {
-// console.log(response.farewell);
-// });
-
-
 
 let keys = {
     prev: {
