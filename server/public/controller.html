@@ -1,71 +1,77 @@
 <!DOCTYPE html>
 <html lang="en" class="h-100 w-100">
 
-  <head>
+<head>
     <title>Controls</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://unpkg.com/tachyons/css/tachyons.min.css">
     <style>
-      .w-75 {
-        width: .75rem;
-      }
-
-      .h-75 {
-        height: .75rem;
-      }
+        .w-75 {
+            width: .75rem;
+        }
+        
+        .h-75 {
+            height: .75rem;
+        }
     </style>
-  </head>
+</head>
 
-  <body class="bg-near-black gold h-100 w-100 sans-serif">
-    <div v-on:keyup="handleKeypress" class="center pa3 w-100 h-100 flex justify-center items-center" id="app">
-      <div>
-        <div class="mb3 center fw6 f4 tc">
-          <span class="w-75 h-75 br-pill bg-green dib"></span> You are controlling {{ name }}'s meeting
+<body class="bg-near-black gold h-100 w-100 sans-serif">
+    <div class="center pa3 w-100 h-100 flex justify-center items-center" id="app">
+        <div>
+            <div class="mb3 center fw6 f4 tc">
+                <span class="w-75 h-75 br-pill bg-green dib"></span> You are controlling {{ name }}'s meeting
+            </div>
+            <div class="bg-gold pa2 flex br3 bw1 b--gold">
+                <button @click="sendKey('ArrowLeft')" class="db f-headline pa3 mr3 h5 w5 br2 bw3 b--near-black bg-near-black pointer">👈</button>
+                <button @click="sendKey('ArrowRight')" class="db f-headline pa3 ml3 h5 w5 br2 bw3 b--near-black bg-near-black pointer">👉</button>
+            </div>
         </div>
-        <div class="bg-gold pa2 flex br3 bw1 b--gold">
-          <button class="db f-headline pa3 mr3 h5 w5 br2 bw3 b--near-black bg-near-black pointer">👈</button>
-          <button class="db f-headline pa3 ml3 h5 w5 br2 bw3 b--near-black bg-near-black pointer">👉</button>
-        </div>
-      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      const app = new Vue({
-        el: '#app',
-        data: {
-          name: 'Kamal',
-        },
-        mounted() {
-          const path = document.URL.split('/')
-          const id = path[path.length - 1]
-          console.log(id)
+        const app = new Vue({
+            el: '#app',
+            data: {
+                name: 'Kamal',
+                id: null,
+                socket: null,
+            },
+            created() {
+                document.addEventListener('keydown', this.handleKeydown);
+            },
+            destroyed() {
+                document.removeEventListener('keydown', this.handleKeydown);
+            },
+            mounted() {
+                const path = document.URL.split('/')
+                this.id = path[path.length - 1]
 
-          const socket = io('/')
-          socket.on('connect', () => {
-            console.log('connect', socket.id)
-            document.addEventListener('keydown', event => {
-              switch(event.key) {
-                case 'ArrowLeft':
-                  console.log('YO I AM LEFT')
-                  socket.emit('remote:keydown', { id, key: 'ArrowLeft' })
-                  break
-                case 'ArrowRight':
-                  console.log('YO I AM RIGHT')
-                  socket.emit('remote:keydown', { id, key: 'ArrowRight' })
-                  break
-              }
-            })
-          })
-        },
-        methods: {
-          handleKeypress: function(event) {
-            console.log(event)
-          }
-        }
-      })
+                this.socket = io('/')
+                this.socket.on('connect', () => {
+                    console.log('Socket.io connected,', this.socket.id)
+                })
+            },
+            methods: {
+                sendKey: function(key) {
+                    console.log('Sending', key)
+                    this.socket.emit('remote:keydown', {
+                        id: this.id,
+                        key
+                    })
+                },
+                handleKeydown: function(event) {
+                    if (['ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                        this.sendKey(event.key)
+                    } else {
+                        console.log(`Skipping unrecognized key ${event.key}`)
+                    }
+                }
+            }
+        })
     </script>
-  </body>
+</body>
 
 </html>
