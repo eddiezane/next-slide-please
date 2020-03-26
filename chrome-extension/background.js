@@ -16,8 +16,10 @@ let ports = {
     popup: null,
 }
 
+const log = (...args) => console.log('background.js log', ...args)
+
 chrome.runtime.onConnect.addListener(function(port) {
-    console.log('background.js connected', port)
+    log('connected', port)
     switch (port.name) {
         case 'content-channel':
             ports.content = port;
@@ -30,7 +32,11 @@ chrome.runtime.onConnect.addListener(function(port) {
             ports.popup = port;
 
             port.onMessage.addListener(function(request, sender, sendResponse) {
-                console.log('background.js message from popup', request)
+                switch (request.event) {
+                    case 'popup-opened':
+                        ports.content.postMessage({ event: 'addEventListeners' })
+                        break;
+                }
             });
             break;
     }

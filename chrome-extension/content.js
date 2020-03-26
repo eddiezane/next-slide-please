@@ -1,18 +1,26 @@
-console.log('content.js');
+const log = (...args) => console.log('content.js log', ...args)
+log('started');
 
 var port = chrome.runtime.connect({ name: "content-channel" });
 port.postMessage({ where: 'content.js' });
 port.onMessage.addListener(function(msg) {
-    console.log('port content.js listener', msg)
+    log('message', msg)
+    switch (msg.event) {
+        case 'addEventListeners':
+            document.addEventListener('fullscreenchange', function(event) {
+                log('fullscreen', event)
+                setTimeout(() => {
+                    log('adding keydown listener')
+                    const frame = document.querySelector('.punch-present-iframe').contentWindow.document.querySelector('.punch-viewer-content')
+                    log(frame)
+                    const keyEvent = makeKeyEvent('next')
+                    log(keyEvent)
+                    frame.dispatchEvent(keyEvent)
+                }, 2000)
+            })
+            break;
+    }
 });
-
-// setTimeout(() => {
-// const frame = document.querySelector('.punch-present-iframe').contentWindow.document
-// // const frame = document.querySelector('.punch-present-iframe').contentWindow.document.querySelector('.punch-viewer-content')
-// frame.addEventListener('keydown', event => {
-// console.log('content keydown', event)
-// })
-// }, 3000)
 
 
 
@@ -22,49 +30,44 @@ port.onMessage.addListener(function(msg) {
 
 
 
-// let keys = {
-// prev: {
-// name: "ArrowLeft",
-// code: 37,
-// },
-// next: {
-// name: "ArrowRight",
-// code: 39,
-// }
-// }
+let keys = {
+    prev: {
+        name: "ArrowLeft",
+        code: 37,
+    },
+    next: {
+        name: "ArrowRight",
+        code: 39,
+    }
+}
 
-// let sendKey = ev => document.querySelector('.punch-present-iframe').contentWindow.document.querySelector('.punch-viewer-content').dispatchEvent(ev)
+let makeKeyEvent = type => {
+    const key = keys[type];
+    if (!key) throw new Error(`Unknown type ${type}`);
 
-// let makeKeyEvent = type => {
-// const key = keys[type];
-// if (!key) throw new Error(`Unknown type ${type}`);
-
-// return new KeyboardEvent('keydown', {
-// altKey:false,
-// bubbles: true,
-// cancelBubble: false, 
-// cancelable: true,
-// charCode: 0,
-// code: key.name,
-// composed: true,
-// ctrlKey: false,
-// currentTarget: null,
-// defaultPrevented: true,
-// detail: 0,
-// eventPhase: 0,
-// isComposing: false,
-// isTrusted: true,
-// key: key.name,
-// keyCode: key.code,
-// location: 0,
-// metaKey: false,
-// repeat: false,
-// returnValue: false,
-// shiftKey: false,
-// type: "keydown",
-// which: key.code
-// })
-// }
-
-// sendKey(makeKeyEvent('next'))
-// sendKey(makeKeyEvent('prev'))
+    return new KeyboardEvent('keydown', {
+        altKey: false,
+        bubbles: true,
+        cancelBubble: false,
+        cancelable: true,
+        charCode: 0,
+        code: key.name,
+        composed: true,
+        ctrlKey: false,
+        currentTarget: null,
+        defaultPrevented: true,
+        detail: 0,
+        eventPhase: 0,
+        isComposing: false,
+        isTrusted: true,
+        key: key.name,
+        keyCode: key.code,
+        location: 0,
+        metaKey: false,
+        repeat: false,
+        returnValue: false,
+        shiftKey: false,
+        type: "keydown",
+        which: key.code
+    })
+}
