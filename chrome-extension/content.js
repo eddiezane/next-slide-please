@@ -1,5 +1,8 @@
 console.log('content.js');
 
+chrome.runtime.sendMessage({ where: 'content.js' }, response => {
+  console.log('content.js', response)
+})
 
 // setTimeout(() => {
   // const frame = document.querySelector('.punch-present-iframe').contentWindow.document
