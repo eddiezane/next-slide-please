@@ -1,15 +1,17 @@
 console.log('content.js');
 
-chrome.runtime.sendMessage({ where: 'content.js' }, response => {
-  console.log('content.js', response)
-})
+var port = chrome.runtime.connect({ name: "content-channel" });
+port.postMessage({ where: 'content.js' });
+port.onMessage.addListener(function(msg) {
+    console.log('port content.js listener', msg)
+});
 
 // setTimeout(() => {
-  // const frame = document.querySelector('.punch-present-iframe').contentWindow.document
-  // // const frame = document.querySelector('.punch-present-iframe').contentWindow.document.querySelector('.punch-viewer-content')
-  // frame.addEventListener('keydown', event => {
-    // console.log('content keydown', event)
-  // })
+// const frame = document.querySelector('.punch-present-iframe').contentWindow.document
+// // const frame = document.querySelector('.punch-present-iframe').contentWindow.document.querySelector('.punch-viewer-content')
+// frame.addEventListener('keydown', event => {
+// console.log('content keydown', event)
+// })
 // }, 3000)
 
 

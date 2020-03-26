@@ -3,7 +3,7 @@
      "version": "1.0",
      "description": "A remote control for advancing Google Slides when you are not presenting",
      "manifest_version": 2,
-     "permissions": ["declarativeContent", "activeTab", "input"],
+     "permissions": ["declarativeContent", "activeTab"],
      "background": {
          "scripts": ["background.js"],
          "persistent": false
