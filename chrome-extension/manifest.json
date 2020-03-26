@@ -1,0 +1,10 @@
+ {
+    "name": "Next Slide Please",
+    "version": "1.0",
+    "description": "A remote control for advancing Google Slides when you are not presenting",
+    "manifest_version": 2,
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": false
+    }
+  }
