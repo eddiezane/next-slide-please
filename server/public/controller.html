@@ -63,11 +63,12 @@
                     })
                 },
                 handleKeydown: function(event) {
-                    if (['ArrowLeft', 'ArrowRight'].includes(event.key)) {
-                        this.sendKey(event.key)
-                    } else {
+                    if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) {
                         console.log(`Skipping unrecognized key ${event.key}`)
+                        return
                     }
+
+                    this.sendKey(event.key)
                 }
             }
         })
