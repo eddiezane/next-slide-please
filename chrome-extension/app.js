@@ -1,9 +1,7 @@
-console.log('hi');
+let bkg = chrome.extension.getBackgroundPage();
+
 window.addEventListener('DOMContentLoaded', (event) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-        var tab = tabs[0];
-        chrome.tabs.sendMessage(tab.id, { counter: 1 }, function handler(response) {
-            console.log('respnonse', response);
-        });
-    });
+    bkg.console.log('1');
+    let socket = io('https://cbc643ba.ngrok.io/');
+
 });
