@@ -20,7 +20,7 @@
     <div class="center pa3 w-100 h-100 flex justify-center items-center" id="app">
         <div>
             <div class="mb3 center fw6 f4 tc">
-                <span class="w-75 h-75 br-pill bg-green dib"></span> You are controlling {{ name }}'s meeting
+                <span :class="statusClass"></span> {{ status }}
             </div>
             <div class="bg-gold pa2 flex br3 bw1 b--gold">
                 <button @click="sendKey('ArrowLeft')" class="db f-headline pa3 mr3 h5 w5 br2 bw3 b--near-black bg-near-black pointer">👈</button>
@@ -35,11 +35,13 @@
         const app = new Vue({
             el: '#app',
             data: {
-                name: 'Kamal',
                 id: null,
                 socket: null,
+                statusClass: '',
+                status: '',
             },
             created() {
+                this.setStatus('connecting')
                 document.addEventListener('keydown', this.handleKeydown);
             },
             destroyed() {
@@ -50,9 +52,27 @@
                 this.id = path[path.length - 1]
 
                 this.socket = io('/')
+
+                //
                 this.socket.on('connect', () => {
                     console.log('Socket.io connected,', this.socket.id)
+                    this.setStatus('connected')
                 })
+
+                //
+                this.socket.on('disconnect', () => {
+                    this.setStatus('disconnected')
+                });
+
+                //
+                this.socket.on('connect_error', (err) => {
+                    this.setStatus('error')
+                });
+
+                //
+                this.socket.on('connect_timeout', (err) => {
+                    this.setStatus('error')
+                });
             },
             methods: {
                 sendKey: function(key) {
@@ -69,6 +89,28 @@
                     }
 
                     this.sendKey(event.key)
+                },
+                setStatus: function(status) {
+                    let classes = 'w-75 h-75 br-pill dib '
+                    switch (status) {
+                        case 'connecting':
+                            classes += 'bg-yellow'
+                            this.status = 'Connecting...'
+                            break;
+                        case 'connected':
+                            classes += 'bg-green'
+                            this.status = 'Live'
+                            break;
+                        case 'error':
+                            classes += 'bg-red'
+                            this.status = 'Connection error'
+                            break;
+                        case 'disconnected':
+                            classes += 'bg-gray'
+                            this.status = 'Disconnected'
+                            break;
+                    }
+                    this.statusClass = classes
                 }
             }
         })

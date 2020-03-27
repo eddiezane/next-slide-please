@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="h-100 w-100">
+<html lang="en">
 
 <head>
     <title>Next slide, please!</title>
@@ -13,16 +13,19 @@
         .h-75 {
             height: .75rem;
         }
+        
+        #container {
+            min-width: max-content;
+        }
     </style>
 </head>
 
-<body class="bg-near-black gold h-100 w-100 sans-serif">
-    <div class="center pa3 w-100 h-100 flex justify-center items-center b">
-        <div id="container">
-            Connecting...
-        </div>
+<body class="bg-near-black gold sans-serif">
+    <div id="container" class="tc pa3 b f5">
+        <span class="w-75 h-75 br-pill bg-gray dib"></span> Loading...
     </div>
 
+    <script src="./constants.js"></script>
     <script src="./socket.io.js"></script>
     <script src="./popup.js"></script>
 </body>

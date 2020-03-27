@@ -15,11 +15,31 @@ let ports = {
     content: null,
     popup: null,
 }
+let state = {
+    stage: 'init',
+    id: null,
+}
+
+const setState = newState => {
+    state = newState
+    if (ports.content) {
+        ports.content.postMessage({
+            event: 'setState',
+            state,
+        })
+    }
+    if (ports.popup) {
+        ports.popup.postMessage({
+            event: 'setState',
+            state,
+        })
+    }
+}
 
 const log = (...args) => console.log('background.js log', ...args)
 
 chrome.runtime.onConnect.addListener(function(port) {
-    log('connected', port)
+    log('port connected', port.name, port)
     switch (port.name) {
         case 'content-channel':
             ports.content = port;
@@ -27,9 +47,9 @@ chrome.runtime.onConnect.addListener(function(port) {
             port.onMessage.addListener(function(request, sender, sendResponse) {
                 log('message from content', request)
                 switch (request.event) {
-                    case 'setSocketId':
-                        log('got socket id', request.id)
-                        ports.popup.postMessage(request)
+                    case 'setState':
+                        log('got new state', request.state)
+                        setState(request.state)
                         break;
                 }
             });
@@ -41,7 +61,8 @@ chrome.runtime.onConnect.addListener(function(port) {
                 log('message from popup', request)
                 switch (request.event) {
                     case 'popup-opened':
-                        ports.content.postMessage({ event: 'addEventListeners' })
+                        setState(state) // re-send current state
+                        ports.content.postMessage({ event: 'activate' })
                         break;
                 }
             });
