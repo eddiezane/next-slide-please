@@ -16,6 +16,9 @@
          "js": ["constants.js", "socket.io.js", "content.js"]
      }],
      "page_action": {
-         "default_popup": "popup.html"
+         "default_popup": "popup.html",
+         "default_icon": {
+             "128": "nsp-128.png"
+         }
      }
  }

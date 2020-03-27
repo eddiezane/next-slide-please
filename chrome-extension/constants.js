@@ -1,3 +1,3 @@
 const _NEXT_SLIDE_PLEASE = {
-    base: 'http://localhost:3000',
+    base: 'https://ec96f7bd.eu.ngrok.io',
 }
